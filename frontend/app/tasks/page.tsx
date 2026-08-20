@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Task = {
   id: number;
@@ -31,6 +31,27 @@ export default function TasksPage() {
   const [title, setTitle] = useState("");
   const [priority, setPriority] = useState("Medium");
 
+  // Load tasks from backend
+  useEffect(() => {
+    async function loadTasks() {
+      try {
+        const response = await fetch("http://localhost:3001/tasks");
+
+        if (!response.ok) {
+          throw new Error("Failed to load tasks");
+        }
+
+        const data = await response.json();
+        setTasks(data);
+      } catch (error) {
+        console.error("Failed to load tasks:", error);
+      }
+    }
+
+    loadTasks();
+  }, []);
+
+  // Add task - frontend for now
   function addTask() {
     if (!title.trim()) return;
 
@@ -48,12 +69,14 @@ export default function TasksPage() {
     setShowModal(false);
   }
 
+  // Delete task - frontend for now
   function deleteTask(id: number) {
     setTasks((currentTasks) =>
       currentTasks.filter((task) => task.id !== id)
     );
   }
 
+  // Search
   const filteredTasks = tasks.filter((task) =>
     task.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -112,21 +135,33 @@ export default function TasksPage() {
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e5e5df] bg-white px-6 py-3">
 
             <div className="flex gap-2">
+
+              {/* Search */}
               <div className="relative">
                 <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder="Search tasks..."
-                    className="h-9 w-48 rounded-lg border border-[#deded8] bg-white px-3 text-sm outline-none focus:border-[#888]"
+                  type="text"
+                  value={searchQuery}
+                  onChange={(event) =>
+                    setSearchQuery(event.target.value)
+                  }
+                  placeholder="Search tasks..."
+                  className="h-9 w-48 rounded-lg border border-[#deded8] bg-white px-3 text-sm outline-none focus:border-[#888]"
                 />
-            </div>
+              </div>
 
-              <button className="rounded-lg border border-[#deded8] px-3 py-2 text-sm hover:bg-[#f5f5f2]">
+              {/* Fields */}
+              <button
+                type="button"
+                className="rounded-lg border border-[#deded8] px-3 py-2 text-sm hover:bg-[#f5f5f2]"
+              >
                 Fields
               </button>
 
-              <button className="rounded-lg border border-[#deded8] px-3 py-2 text-sm hover:bg-[#f5f5f2]">
+              {/* Filter */}
+              <button
+                type="button"
+                className="rounded-lg border border-[#deded8] px-3 py-2 text-sm hover:bg-[#f5f5f2]"
+              >
                 Filter
               </button>
             </div>
@@ -135,6 +170,7 @@ export default function TasksPage() {
             <div className="flex gap-1 rounded-lg bg-[#f1f1ed] p-1">
 
               <button
+                type="button"
                 onClick={() => setViewMode("board")}
                 className={`rounded-md px-3 py-1.5 text-sm ${
                   viewMode === "board"
@@ -146,6 +182,7 @@ export default function TasksPage() {
               </button>
 
               <button
+                type="button"
                 onClick={() => setViewMode("list")}
                 className={`rounded-md px-3 py-1.5 text-sm ${
                   viewMode === "list"
@@ -169,7 +206,7 @@ export default function TasksPage() {
                     key={column}
                     title={column}
                     tasks={filteredTasks.filter(
-                        (task) => task.status === column
+                      (task) => task.status === column
                     )}
                     onAdd={() => setShowModal(true)}
                     onDelete={deleteTask}
@@ -180,8 +217,8 @@ export default function TasksPage() {
             </div>
           ) : (
             <TaskList
-                tasks={filteredTasks}
-                onDelete={deleteTask}
+              tasks={filteredTasks}
+              onDelete={deleteTask}
             />
           )}
 
@@ -200,6 +237,7 @@ export default function TasksPage() {
               </h2>
 
               <button
+                type="button"
                 onClick={() => setShowModal(false)}
                 className="text-xl text-[#888] hover:text-[#222]"
               >
@@ -263,6 +301,7 @@ export default function TasksPage() {
             <div className="flex justify-end gap-3">
 
               <button
+                type="button"
                 onClick={() => setShowModal(false)}
                 className="rounded-lg border border-[#deded8] px-4 py-2 text-sm font-medium text-[#555] hover:bg-[#f5f5f2]"
               >
@@ -270,6 +309,7 @@ export default function TasksPage() {
               </button>
 
               <button
+                type="button"
                 onClick={addTask}
                 disabled={!title.trim()}
                 className="rounded-lg bg-[#222] px-4 py-2 text-sm font-medium text-white hover:bg-black disabled:cursor-not-allowed disabled:opacity-40"
@@ -282,7 +322,6 @@ export default function TasksPage() {
           </div>
         </div>
       )}
-
     </main>
   );
 }
@@ -313,6 +352,7 @@ function TaskColumn({
         </h2>
 
         <button
+          type="button"
           onClick={onAdd}
           className="text-lg text-[#777] hover:text-[#222]"
         >
@@ -337,6 +377,7 @@ function TaskColumn({
               </h3>
 
               <button
+                type="button"
                 onClick={() => onDelete(task.id)}
                 className="text-xs text-[#aaa] hover:text-red-500"
                 title="Delete task"
@@ -369,6 +410,7 @@ function TaskColumn({
 
       {/* Add Task */}
       <button
+        type="button"
         onClick={onAdd}
         className="mt-3 w-full rounded-lg border border-dashed border-[#cfcfc8] py-2 text-sm text-[#777] hover:bg-white"
       >
@@ -427,6 +469,7 @@ function TaskList({
             </span>
 
             <button
+              type="button"
               onClick={() => onDelete(task.id)}
               className="w-fit text-xs text-[#999] hover:text-red-500"
             >

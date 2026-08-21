@@ -14,6 +14,8 @@ type ViewMode = "board" | "list";
 const columns = ["To Do", "Doing", "Completed", "On Hold"];
 
 const initialTasks: Task[] = [];
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
@@ -44,7 +46,7 @@ export default function TasksPage() {
   useEffect(() => {
     async function loadTasks() {
       try {
-        const response = await fetch("http://localhost:3001/tasks");
+        const response = await fetch(`${API_URL}/tasks`);
 
         if (!response.ok) {
           throw new Error("Failed to load tasks");
@@ -65,7 +67,7 @@ export default function TasksPage() {
     if (!title.trim()) return;
 
     try {
-      const response = await fetch("http://localhost:3001/tasks", {
+      const response = await fetch(`${API_URL}/tasks`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -97,7 +99,7 @@ export default function TasksPage() {
 
     try {
       const response = await fetch(
-        `http://localhost:3001/tasks/${editingTask.id}`,
+        `${API_URL}/tasks/${editingTask.id}`,
         {
           method: "PATCH",
           headers: {
@@ -151,7 +153,7 @@ export default function TasksPage() {
   async function deleteTask(id: number) {
     try {
       const response = await fetch(
-        `http://localhost:3001/tasks/${id}`,
+        `${API_URL}/tasks/${id}`,
         {
           method: "DELETE",
         },

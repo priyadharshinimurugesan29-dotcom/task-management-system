@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
 } from '@nestjs/common';
 
@@ -25,13 +26,26 @@ export class TasksController {
 
   @Post()
   create(
-    @Body() body: { title: string; priority: string; status: string }
+    @Body() body: { title: string; priority: string; status: string },
   ) {
     return this.tasksService.create(
-        body.title,
-        body.priority,
-        body.status,
-);
+      body.title,
+      body.priority,
+      body.status,
+    );
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() body: { title: string; priority: string; status: string },
+  ) {
+    return this.tasksService.update(
+      Number(id),
+      body.title,
+      body.priority,
+      body.status,
+    );
   }
 
   @Delete(':id')

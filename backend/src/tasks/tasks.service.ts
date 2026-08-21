@@ -28,6 +28,21 @@ export class TasksService {
     return this.taskRepository.save(task);
   }
 
+  async update(
+    id: number,
+    title: string,
+    priority: string,
+    status: string,
+  ) {
+    await this.taskRepository.update(id, {
+      title,
+      priority,
+      status,
+    });
+
+    return this.taskRepository.findOneBy({ id });
+  }
+
   async remove(id: number) {
     return this.taskRepository.delete(id);
   }

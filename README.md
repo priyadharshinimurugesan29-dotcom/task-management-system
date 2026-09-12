@@ -78,10 +78,6 @@ The List view provides a table-style representation of the same task data.
 
 API Endpoints
 
-Base URL:
-
-https://task-management-system-07lf.onrender.com
-
 Method
 
 Endpoint
